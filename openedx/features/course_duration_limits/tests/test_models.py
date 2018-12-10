@@ -209,21 +209,27 @@ class TestCourseDurationLimitConfig(CacheIsolationTestCase):
             CourseDurationLimitConfig.objects.create(enabled=global_setting, enabled_as_of=datetime(2018, 1, 1))
             for site_setting in (True, False, None):
                 test_site_cfg = SiteConfigurationFactory.create(values={'course_org_filter': []})
-                CourseDurationLimitConfig.objects.create(site=test_site_cfg.site, enabled=site_setting, enabled_as_of=datetime(2018, 1, 1))
+                CourseDurationLimitConfig.objects.create(
+                    site=test_site_cfg.site, enabled=site_setting, enabled_as_of=datetime(2018, 1, 1)
+                )
 
                 for org_setting in (True, False, None):
                     test_org = "{}-{}".format(test_site_cfg.id, org_setting)
                     test_site_cfg.values['course_org_filter'].append(test_org)
                     test_site_cfg.save()
 
-                    CourseDurationLimitConfig.objects.create(org=test_org, enabled=org_setting, enabled_as_of=datetime(2018, 1, 1))
+                    CourseDurationLimitConfig.objects.create(
+                        org=test_org, enabled=org_setting, enabled_as_of=datetime(2018, 1, 1)
+                    )
 
                     for course_setting in (True, False, None):
                         test_course = CourseOverviewFactory.create(
                             org=test_org,
                             id=CourseLocator(test_org, 'test_course', 'run-{}'.format(course_setting))
                         )
-                        CourseDurationLimitConfig.objects.create(course=test_course, enabled=course_setting, enabled_as_of=datetime(2018, 1, 1))
+                        CourseDurationLimitConfig.objects.create(
+                            course=test_course, enabled=course_setting, enabled_as_of=datetime(2018, 1, 1)
+                        )
 
             with self.assertNumQueries(4):
                 all_configs = CourseDurationLimitConfig.all_current_course_configs()

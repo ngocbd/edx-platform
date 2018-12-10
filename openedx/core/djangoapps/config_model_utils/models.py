@@ -25,6 +25,9 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 
 
 class Provenance(Enum):
+    """
+    Provenance enum
+    """
     course = _('Course')
     org = _('Org')
     site = _('Site')
@@ -161,14 +164,19 @@ class StackedConfigurationModel(ConfigurationModel):
                         provenances[field.name] = Provenance.global_
 
         current = cls(**values)
-        current.provenances = {field.name: provenances[field.name] for field in stackable_fields}
+        current.provenances = {field.name: provenances[field.name] for field in stackable_fields}  # pylint: disable=attribute-defined-outside-init
         cache.set(cache_key_name, current, cls.cache_timeout)
         return current
 
     @classmethod
     def all_current_course_configs(cls):
+        """
+        Return configuration for all courses
+        """
         all_courses = CourseOverview.objects.all()
-        all_site_configs = SiteConfiguration.objects.filter(values__contains='course_org_filter', enabled=True).select_related('site')
+        all_site_configs = SiteConfiguration.objects.filter(
+            values__contains='course_org_filter', enabled=True
+        ).select_related('site')
 
         try:
             default_site = Site.objects.get(id=settings.SITE_ID)
@@ -199,6 +207,9 @@ class StackedConfigurationModel(ConfigurationModel):
         }
 
         def provenance(course, field):
+            """
+            Return provenance for given field
+            """
             for (config_key, provenance) in [
                 ((None, None, course.id), Provenance.course),
                 ((None, course.id.org, None), Provenance.org),
