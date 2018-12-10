@@ -232,7 +232,6 @@ class TestContentTypeGatingConfig(CacheIsolationTestCase):
             }
         )
 
-
     def test_caching_global(self):
         global_config = ContentTypeGatingConfig(enabled=True, enabled_as_of=datetime(2018, 1, 1))
         global_config.save()
